@@ -1,0 +1,37 @@
+pipeline {
+
+agent { label "windows" } 
+options { disableConcurrentBuilds() }
+//tools { maven 'MVN' } 
+stages {
+
+
+   stage('Build') {
+      steps {
+      withEnv(["JAVA_HOME=${ tool 'jdk-1.8.0_64bits' }"]) {
+      sh "echo $JAVA_HOME"
+      } 
+      // Run the maven build
+      script { 
+                if (isUnix()) {
+         sh "echo '${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean package"
+      } else {
+         bat(/"${mvnHome}\bin\mvn" -Dmaven.test.failure.ignore clean package/)
+      }
+        }
+     }
+   }
+   stage('TestComplete') {
+    steps {
+        // One or more steps need to be included within the steps block.
+        testcompletetest generateMHT: true, launchType: 'lcKdt', project: 'TC_Demonstration', suite: 'C:\\Users\\dermot.canniffe\\OneDrive - SmartBear Software, Inc\\TestComplete 14 Projects\\LatestDemoProject\\DemoProject2.pjs', test: 'PurchaseWithBackendValidation', useTCService: true, userName: 'AD\\dermot.canniffe', userPassword: 'C97h21a596'
+        }
+    }
+   stage('Results') {
+      steps {
+      junit '**/target/surefire-reports/TEST-*.xml'
+      archive 'target/*.jar'
+   }
+    }
+}
+}
