@@ -1,6 +1,7 @@
 pipeline {
 
-agent { label "windows" } 
+//agent { label "windows" } 
+agent any
 options { disableConcurrentBuilds() }
 //tools { maven 'MVN' } 
 stages {
