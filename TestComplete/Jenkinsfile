@@ -1,0 +1,169 @@
+pipeline {
+	environment {
+		SMOKE_TEST = "mvn test -Pbdd '-Dcucumber.tags=@smoke'  '-Dgrid.url=http://ws068261.avivagroup.com:4444/wd/hub'"
+		REGRESSION_TEST = "mvn test -Pbdd '-Dcucumber.tags=@regression' '-Dgrid.url=http://ws068261.avivagroup.com:4444/wd/hub'"
+		RTW_TEST = "mvn test -Pbdd '-Dbdd.story.filter=rtw' '-Dhiplus.db=age' '-Dhiplus.env=WASTEST3'"
+		API_TEST = "mvn test -Pbdd '-Dbdd.story.filter=api'  '-Dgrid.url=http://ws068261.avivagroup.com:4444/wd/hub'"
+		BRANCH_TEST_START = "mvn test -Pbdd '-Dcucumber.tags=@" 
+		BRANCH_TEST_END = "' '-Dgrid.url=http://ws068261.avivagroup.com:4444/wd/hub'"
+	}
+	agent { label "maven"}
+	options {
+		disableConcurrentBuilds()
+	}
+	tools {
+		maven 'MVN'
+	}
+
+	stages {
+		stage('Checkout'){
+			steps {
+				checkout scm
+			}
+		}
+		stage('Build'){
+			steps {
+				sh "mvn -U clean install"
+			}
+		}
+		stage('Publish documentation '){
+		
+			when { expression { 
+				def branch = env.BRANCH_NAME
+					return "master" == branch || "doco" == branch
+			}}
+			
+			steps{
+				
+				script {
+						 try {
+							 sh "mvn -Pdoco site site:deploy"
+						 } catch (error){
+							 echo "Cannot publish documentation" + error
+						 }
+					}
+				}
+		}
+		stage ("Compatibility tests") {
+			when { branch 'multibrowser' }
+			steps {
+				parallel (
+						"chrome" : {
+					script {
+						try {
+							sh "mvn test -Pbdd '-Dcucumber.tags=@smoke' '-Dgrid.url=http://ws068261.avivagroup.com:4444/wd/hub' '-Dwebdriver.browser=chrome' '-Dallure.results.directory=target/chrome/allure-result'"
+						} catch (error ){
+							echo "Test errors happened: " + error
+						}
+					}
+						},
+						"firefox" : {
+							script {
+								try {
+									sh "mvn test -Pbdd '-Dcucumber.tags=@smoke' '-Dgrid.url=http://ws068261.avivagroup.com:4444/wd/hub' '-Dwebdriver.browser=firefox' '-Dallure.results.directory=target/firefox/allure-result'"
+								} catch (error ){
+									echo "Test errors happened: " + error
+								}
+							}
+						},
+						"ie" : {
+							script {
+								try {
+									sh "mvn test -Pbdd '-Dcucumber.tags=@smoke' '-Dgrid.url=http://ws068261.avivagroup.com:4444/wd/hub' '-Dwebdriver.browser=ie' '-Dallure.results.directory=target/ie/allure-result'"
+								} catch (error ){
+									echo "Test errors happened: " + error
+								}
+							}
+						},
+						"edge" : {
+							script {
+								try {
+									sh "mvn test -Pbdd '-Dcucumber.tags=@smoke' '-Dgrid.url=http://ws068261.avivagroup.com:4444/wd/hub' '-Dwebdriver.browser=MicrosoftEdge' '-Dallure.results.directory=target/edge/allure-result'"
+								} catch (error ){
+									echo "Test errors happened: " + error
+								}
+							}
+						}
+				)
+			}
+		}
+		
+		stage('Test'){
+			//when { expression { return env.BRANCH_NAME != 'doco'} } 
+			when { not { anyOf { branch 'doco' ; branch 'regression' ; branch 'multibrowser' }}}
+			steps {
+				script {			
+					try {
+						if (env.BRANCH_NAME.contains("my_aviva_api")) {
+							sh API_TEST
+						} else {
+						if (env.BRANCH_NAME.contains("DDD-")) {
+							def ticketTag = ticket(env.BRANCH_NAME)
+							def BRANCH_TEST = BRANCH_TEST_START + ticketTag + BRANCH_TEST_END
+							sh BRANCH_TEST
+						} else {
+							if (env.BRANCH_NAME.contains("RTW")){
+								sh RTW_TEST
+							} else {
+								sh SMOKE_TEST
+							}
+						}
+						}
+					} catch (error ){
+						echo "Test errors happened: " + error
+					}
+				}
+			}
+		}
+
+		stage('Regression'){
+			when { branch 'regression' }
+			steps {
+				script {
+					try {
+							sh REGRESSION_TEST
+					} catch (error ){
+						echo "Test errors happened: " + error
+					}
+				}
+			}
+		}
+
+		stage('Results'){
+			when { expression { return env.BRANCH_NAME != 'doco'} }
+			steps {
+				script {
+					allure jdk: '', results: [[path: 'target/allure-results/']]
+				}
+				script {
+					publishHTML (target: [
+					                      allowMissing: true,
+					                      alwaysLinkToLastBuild: true,
+					                      keepAll: true,
+					                      reportDir: 'target/allure-report/',
+					                      reportFiles: 'index.html',
+					                      reportName: "Steps report"
+					                    	  ])
+				}
+				script {
+					writeFile file:"Steps Report.html", text: "<html><head><meta http-equiv=\"refresh\" content=\"0; URL='${env.BUILD_URL}Steps_report/index.html'\" /></head><body>Loading...</body></html>" 
+						archiveArtifacts artifacts:'Steps Report.html'
+				}
+				script {
+					junit '**/target/surefire-reports/*.xml'		
+					if (currentBuild.result == 'UNSTABLE'){
+						currentBuild.result = 'FAILURE'
+					}
+				}
+			}
+		}
+	}
+}
+
+@NonCPS
+def ticket(text) {
+	def matcher = (text =~ /(DDD-\d{3,})/ )
+	matcher ? matcher[0][1] : null
+	return matcher[0][1]
+}
+
