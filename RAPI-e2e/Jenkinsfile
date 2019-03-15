@@ -13,13 +13,13 @@ stages {
       sh "echo $JAVA_HOME"
       } 
       // Run the maven build
-      script { 
-                if (isUnix()) {
-         sh "echo '${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean package"
-      } else {
-         bat(/"${mvnHome}\bin\mvn" -Dmaven.test.failure.ignore clean package/)
-      }
-        }
+      //script { 
+               // if (isUnix()) {
+         //sh "echo '${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean package"
+      //} else {
+       //  bat(/"${mvnHome}\bin\mvn" -Dmaven.test.failure.ignore clean package/)
+      //}
+        //}
      }
    }
    stage('APICall') {
