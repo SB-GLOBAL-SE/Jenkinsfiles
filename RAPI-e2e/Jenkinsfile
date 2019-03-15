@@ -6,22 +6,6 @@ options { disableConcurrentBuilds() }
 //tools { maven 'MVN' } 
 stages {
 
-
-   stage('Build') {
-      steps {
-      withEnv(["JAVA_HOME=${ tool 'jdk-1.8.0_64bits' }"]) {
-      sh "echo $JAVA_HOME"
-      } 
-      // Run the maven build
-      //script { 
-               // if (isUnix()) {
-         //sh "echo '${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean package"
-      //} else {
-       //  bat(/"${mvnHome}\bin\mvn" -Dmaven.test.failure.ignore clean package/)
-      //}
-        //}
-     }
-   }
    stage('APICall') {
       steps {
          bat label: 'Retrieve Product from API', returnStdout: true, script: '"C:\\Program Files\\SmartBear\\ReadyAPI-2.6.0\\bin\\testrunner.bat" -sWebStoreTestSuite -cBareGetOrderRequest -r -a -j -f${WORKSPACE} "-RJUnit-Style HTML Report" -FXML "-EDefault environment" -tC:\\Users\\dermot.canniffe\\soapui-settings.xml "C:\\Users\\dermot.canniffe\\OneDrive - SmartBear Software, Inc\\ReadyAPI Projects\\Project-2-readyapi-project"'
