@@ -14,12 +14,12 @@ stages {
    stage('TestComplete') {
     steps {
         // One or more steps need to be included within the steps block.
-        testcompletetest generateMHT: true, launchType: 'lcKdt', project: 'TC_Demonstration', suite: 'C:\\Users\\dermot.canniffe\\OneDrive - SmartBear Software, Inc\\TestComplete 14 Projects\\LatestDemoProject\\DemoProject2.pjs', test: 'PurchaseWithBackendValidation', useTCService: true, userName: 'AD\\dermot.canniffe', userPassword: 'C97h21a596'
+        testcompletetest generateMHT: true, launchType: 'lcKdt', project: 'TC_Demonstration', suite: 'C:\\Users\\dermot.canniffe\\OneDrive - SmartBear Software, Inc\\TestComplete 14 Projects\\LatestDemoProject\\DemoProject3.pjs', test: 'PurchaseWithBackendValidation', useTCService: true, userName: 'AD\\dermot.canniffe', userPassword: 'T49i77m282', commandLineArguments: '/ExportSummary:"${WORKSPACE}\${JOB_NAME}\target\test-reports\result_${BUILD_NUMBER}.xml" /exit' 
         }
     }
    stage('Results') {
       steps {
-      junit '**/target/surefire-reports/TEST-*.xml'
+      junit '**/target/test-reports/result_${BUILD_NUMBER}.xml'
       archive 'target/*.jar'
    }
     }
