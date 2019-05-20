@@ -17,7 +17,7 @@ stages {
    }
    stage('APICall') {
       steps {
-         bat label: 'Retrieve Product from API', returnStdout: true, script: '"C:\\Program Files\\SmartBear\\ReadyAPI-2.7.0\\bin\\testrunner.bat" -sWebStoreTestSuite -cBareGetOrderRequest -r -a -j -f${WORKINGSPACE} "-RJUnit-Style HTML Report" -FXML "-EDefault environment" -GWORKINGSPACE="C:\\${WORKSPACE}\\${JOB_NAME}\\target\\test-reports" -tC:\\Users\\dermot.canniffe\\soapui-settings.xml "C:\\Users\dermot.canniffe\\OneDrive - SmartBear Software, Inc\\ReadyAPI Projects\\Project-2-readyapi-project"'
+         bat label: 'Retrieve Product from API', returnStdout: true, script: '"C:\\Program Files\\SmartBear\\ReadyAPI-2.7.0\\bin\\testrunner.bat" -sWebStoreTestSuite -cBareGetOrderRequest -r -a -j -f${WORKINGSPACE} "-RJUnit-Style HTML Report" -FXML "-EDefault environment" -GWORKINGSPACE="C:\\${WORKSPACE}\\${JOB_NAME}\\target\\test-reports" -tC:\\Users\\dermot.canniffe\\soapui-settings.xml "C:\\Users\\dermot.canniffe\\OneDrive - SmartBear Software, Inc\\ReadyAPI Projects\\Project-2-readyapi-project"'
       }
    }
    stage('TestComplete') {
