@@ -18,7 +18,7 @@ stages {
    stage('APICall') {
       steps {
        script {
-           env.TESTDATA =  curl wttr.in/Galway?format=3 2>/dev/null
+           env.TESTDATA =  curl wttr.in\/Galway?format=3 2>\/dev\/null
        }
        echo "${env.TESTDATA}"
          //bat label: 'Retrieve Product from API', returnStdout: true, script: '"C:\\Program Files\\SmartBear\\ReadyAPI-2.7.0\\bin\\testrunner.bat" -sWebStoreTestSuite -cBareGetOrderRequest -r -a -j -f${WORKINGSPACE} "-RJUnit-Style HTML Report" -FXML "-EDefault environment" -GWORKINGSPACE="C:\\${WORKSPACE}\\${JOB_NAME}\\target\\test-reports" -tC:\\Users\\dermot.canniffe\\soapui-settings.xml "C:\\Users\\dermot.canniffe\\OneDrive - SmartBear Software, Inc\\ReadyAPI Projects\\Project-2-readyapi-project"'
