@@ -17,11 +17,16 @@ stages {
    }
    stage('APICall') {
       steps {
-         bat label: 'Retrieve Product from API', returnStdout: true, script: '"C:\\Program Files\\SmartBear\\ReadyAPI-2.7.0\\bin\\testrunner.bat" -sWebStoreTestSuite -cBareGetOrderRequest -r -a -j -f${WORKINGSPACE} "-RJUnit-Style HTML Report" -FXML "-EDefault environment" -GWORKINGSPACE="C:\\${WORKSPACE}\\${JOB_NAME}\\target\\test-reports" -tC:\\Users\\dermot.canniffe\\soapui-settings.xml "C:\\Users\\dermot.canniffe\\OneDrive - SmartBear Software, Inc\\ReadyAPI Projects\\Project-2-readyapi-project"'
+       script {
+           env.TESTDATA =  curl wttr.in/Galway?format=3 2>/dev/null
+       }
+       echo "${env.TESTDATA}"
+         //bat label: 'Retrieve Product from API', returnStdout: true, script: '"C:\\Program Files\\SmartBear\\ReadyAPI-2.7.0\\bin\\testrunner.bat" -sWebStoreTestSuite -cBareGetOrderRequest -r -a -j -f${WORKINGSPACE} "-RJUnit-Style HTML Report" -FXML "-EDefault environment" -GWORKINGSPACE="C:\\${WORKSPACE}\\${JOB_NAME}\\target\\test-reports" -tC:\\Users\\dermot.canniffe\\soapui-settings.xml "C:\\Users\\dermot.canniffe\\OneDrive - SmartBear Software, Inc\\ReadyAPI Projects\\Project-2-readyapi-project"'
       }
    }
    stage('TestComplete') {
     steps {
+        echo "${env.TESTDATA}"
         // One or more steps need to be included within the steps block.
         testcompletetest generateMHT: true, launchType: 'lcKdt', project: 'TC_Demonstration', suite: 'C:\\Users\\dermot.canniffe\\OneDrive - SmartBear Software, Inc\\TestComplete 14 Projects\\LatestDemoProject\\DemoProject3.pjs', test: 'PurchaseWithBackendValidation', useTCService: true, userName: 'AD\\dermot.canniffe', userPassword: 'T49i77m282', commandLineArguments: '/ExportSummary:"${WORKSPACE}\\${JOB_NAME}\\target\\test-reports\\result_${BUILD_NUMBER}.xml" /exit' 
         }
