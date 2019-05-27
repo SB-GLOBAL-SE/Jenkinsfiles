@@ -45,5 +45,6 @@ stages {
 
 def getTemp() {
     curlResult = sh 'curl wttr.in/Galway?format=%t 2>/dev/null'
+    echo "CURLRESULT: ${curlResult}"
     return curlResult
 }
