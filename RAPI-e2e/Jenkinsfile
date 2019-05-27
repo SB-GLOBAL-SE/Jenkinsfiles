@@ -8,9 +8,6 @@ agent any
 options { disableConcurrentBuilds() }
 //tools { maven 'MVN' } 
 stages {
-   environment {
-      TESTDATA = getTemp()
-   }
    stage('Prep') {
       steps {
          cleanWs()  
@@ -22,6 +19,9 @@ stages {
       }
    }
    stage('APICall') {
+   environment {
+      TESTDATA = getTemp()
+   }
       steps {
        //script {
            //env.TESTDATA =  getTemp()
