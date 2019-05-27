@@ -44,7 +44,10 @@ stages {
 }
 
 def getTemp() {
-    curlResult = sh 'curl wttr.in/Galway?format=%t 2>/dev/null'
-    echo "CURLRESULT: ${curlResult}"
-    return curlResult
+    curlProcess = [ 'bash'. '-c', "curl wttr.in/Galway?format=%t" ].execute().text
+    process.waitFor()
+    println process.err.text
+    println process.text
+    echo "CURLRESULT: ${curlProcess}"
+    return curlProcess
 }
