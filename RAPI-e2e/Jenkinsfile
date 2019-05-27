@@ -44,5 +44,5 @@ stages {
 }
 
 def getTemp() {
-    return sh "curl wttr.in/Galway?format=%t 2>/dev/null"
+    return sh 'curl wttr.in/Galway?format=%t 2>/dev/null'
 }
