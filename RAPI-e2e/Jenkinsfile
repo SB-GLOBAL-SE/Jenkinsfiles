@@ -43,6 +43,7 @@ stages {
 }
 }
 
+@NonCPS
 def getTemp() {
     curlProcess = [ 'bash', '-c', "curl wttr.in/Galway?format=%t" ].execute().text
     process.waitFor()
