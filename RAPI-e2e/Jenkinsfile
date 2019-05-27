@@ -2,10 +2,12 @@ pipeline {
 
 //agent { label "windows" } 
 agent any
+environment {
+   TESTDATA = "placeholder"
+}
 options { disableConcurrentBuilds() }
 //tools { maven 'MVN' } 
 stages {
-   env.TESTDATA = "placeholder"
    stage('Prep') {
       steps {
          cleanWs()  
@@ -19,7 +21,7 @@ stages {
    stage('APICall') {
       steps {
        script {
-           env.TESTDATA =  sh "curl wttr.in/Galway?format=%t 2>/dev/null"
+           env.TESTDATA =  getTemp()
        }
        echo "TESTDATA: ${env.TESTDATA}"
          //bat label: 'Retrieve Product from API', returnStdout: true, script: '"C:\\Program Files\\SmartBear\\ReadyAPI-2.7.0\\bin\\testrunner.bat" -sWebStoreTestSuite -cBareGetOrderRequest -r -a -j -f${WORKINGSPACE} "-RJUnit-Style HTML Report" -FXML "-EDefault environment" -GWORKINGSPACE="C:\\${WORKSPACE}\\${JOB_NAME}\\target\\test-reports" -tC:\\Users\\dermot.canniffe\\soapui-settings.xml "C:\\Users\\dermot.canniffe\\OneDrive - SmartBear Software, Inc\\ReadyAPI Projects\\Project-2-readyapi-project"'
@@ -39,4 +41,8 @@ stages {
    }
     }
 }
+}
+
+def getTemp() {
+    return sh "curl wttr.in/Galway?format=%t 2>/dev/null"
 }
