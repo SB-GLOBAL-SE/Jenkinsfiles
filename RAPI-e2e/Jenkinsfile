@@ -50,5 +50,5 @@ def getTemp() {
     //println process.err.text
     //println process.text
     echo "CURLRESULT: ${curlProcess}"
-    return curlProcess.text
+    return curlProcess
 }
